@@ -8,7 +8,7 @@ import MyHero_Levels.Events.MyHeroPlayerLevelUpEvent;
 public class MyHeroLevel {
 
 	private long PlayerEXP = 0;
-	private int Level = 0;
+	private int Level = 1;
 	
 
 	/**
@@ -17,7 +17,7 @@ public class MyHeroLevel {
 	public void adaptLevel()
 	{
 		MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
-		for(int i = 0; i < api.getMaxLevel(); i++) if(PlayerEXP < api.getExpFromLevel(i)) {Level = i;break;}
+		for(int i = 0; i < api.getMaxLevel(); i++) if(PlayerEXP < api.getExpFromLevel(i)) {Level = i+1;break;}
 	}
 	/**
 	 *  Convert player exp to correct level
@@ -131,7 +131,11 @@ public class MyHeroLevel {
 		return PlayerEXP;
 	}
 	
-	
+	@Override
+	public String toString()
+	{
+		return "Exp: " +PlayerEXP + " Level: "+Level;
+	}
 	
 	
 }

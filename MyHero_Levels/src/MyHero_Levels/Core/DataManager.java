@@ -35,6 +35,7 @@ public class DataManager {
 		}
 		
 		dataBaseInicialization();
+
 		return api;
 	}
 	public static void SaveAllPlayersData()
@@ -94,8 +95,8 @@ public class DataManager {
 		{
 			Connection con =ConnectionManager.getConnection("PlayersLevels");
 			Statement st = con.createStatement();
-			if(!st.execute("UPDATE " + TableName + " SET uuid = '" + uuid.toString() + "', exp = "+ exp ))
-				createPlayer(uuid,exp);
+			st.execute("UPDATE " + TableName + " SET  exp = "+ exp +" WHERE  uuid = '" + uuid.toString() + "'");
+				//createPlayer(uuid,exp);
 			con.close();
 		}
 		catch (SQLException e) 
@@ -132,6 +133,7 @@ public class DataManager {
 			{
 				mhl = new MyHeroLevel();
 				mhl.setPlayerExp(result.getLong(2));
+				mhl.adaptLevel();
 				api.addPlayerData(mhl, UUID.fromString(result.getString(1)));
 			}
 			con.close();

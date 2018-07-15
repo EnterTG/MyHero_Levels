@@ -7,6 +7,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import MyHero_Core.Managers.LangManager;
 import MyHero_Levels.Core.MyHeroLevelsMain;
 import cn.nukkit.Player;
 
@@ -62,10 +63,11 @@ public class MyHeroLevelsAPI {
 	 */
 	public long getExpFromLevel(int level)
 	{
+
 		if(level > MaxLevel)
 			return LevelsTable[MaxLevel-1];
 		else
-			return LevelsTable[level - 1];
+			return LevelsTable[Math.max(level - 1, 0)];
 	}
 	/**
 	 * @param level
@@ -96,6 +98,7 @@ public class MyHeroLevelsAPI {
 		{
 			e.printStackTrace();
 		}
+		LevelsTable = exptable;
 	}
 	
 	
