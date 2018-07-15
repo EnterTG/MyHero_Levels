@@ -1,0 +1,8 @@
+MaxLevel: 40
+Equation: "%level%*2+3^(%level%+2)"
+UseMySql: false
+MySqlIP: 0.0.0.0
+MySqlLogin: root
+MySqlPass: ""
+MySqlDatabase: "main"
+MySqlPort: ""

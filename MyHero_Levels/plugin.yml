@@ -1,0 +1,8 @@
+#name, main, version and api are required
+name: MyHeroLevels
+main: MyHero_Levels.Core.MyHeroLevelsMain
+version: "1.0"
+api: ["1.0.5"]
+author: WindSkill
+description: Plugin MyHero Levels for Nukkit
+depend: ["DbLib","MyHero"]
