@@ -1,7 +1,6 @@
 package MyHero_Levels.Core;
 
 import MyHero_Core.Core.MyHeroMain;
-import MyHero_Core.Managers.LangManager;
 import MyHero_Levels.API.MyHeroLevel;
 import MyHero_Levels.API.MyHeroLevelsAPI;
 import cn.nukkit.Player;

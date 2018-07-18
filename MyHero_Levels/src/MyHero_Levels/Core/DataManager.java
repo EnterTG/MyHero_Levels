@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
+import MyHero_Core.Core.MyHeroMain;
 import MyHero_Core.Managers.ConnectionManager;
 import MyHero_Core.Managers.ResourceManager;
 import MyHero_Levels.API.MyHeroLevel;
@@ -113,14 +114,14 @@ public class DataManager {
 	 */
 	public static MyHeroLevel LoadPlayerData(Player player)
 	{
-		return LoadPlayerData(player.getUniqueId());
+		return LoadPlayerData(player,player.getUniqueId());
 	}
 	
 	/**
 	 * @param playeruuid
 	 * @return null if player dont exist
 	 */
-	public static MyHeroLevel LoadPlayerData(UUID playeruuid)
+	public static MyHeroLevel LoadPlayerData(Player p,UUID playeruuid)
 	{
 		MyHeroLevel mhl = null;
 		try 
@@ -131,7 +132,7 @@ public class DataManager {
 			
 			if(result.next())
 			{
-				mhl = new MyHeroLevel();
+				mhl = new MyHeroLevel(p);
 				mhl.setPlayerExp(result.getLong(2));
 				mhl.adaptLevel();
 				api.addPlayerData(mhl, UUID.fromString(result.getString(1)));
@@ -147,24 +148,8 @@ public class DataManager {
 	
 	private static void loadAllPlayerData()
 	{
-		Connection con =ConnectionManager.getConnection("PlayersLevels");
-		MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
-		try 
-		{
-			ResultSet result = con.prepareStatement("SELECT * FROM "+TableName).executeQuery();
-			while(result.next())
-			{
-				MyHeroLevel mhl = new MyHeroLevel();
-				mhl.setPlayerExp(result.getLong(2));
-				api.addPlayerData(mhl, UUID.fromString(result.getString(1)));
-			}
-		} 
-		catch (SQLException e) 
-		{
-			e.printStackTrace();
-		} 
-		
-		
+		MyHeroMain.getMain().getServer().getOnlinePlayers().forEach((k,v) -> LoadPlayerData(v));
+
 	}
 	
 	private static void dataBaseInicialization()
