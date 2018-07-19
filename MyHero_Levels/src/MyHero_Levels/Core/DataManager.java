@@ -41,7 +41,7 @@ public class DataManager {
 	}
 	public static void SaveAllPlayersData()
 	{
-		MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
+		MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
 		api.getPlayersData().forEach( (uuid,mhl) -> 
 		{
 			savePlayerData(uuid,mhl);
@@ -128,7 +128,7 @@ public class DataManager {
 		{
 			Connection con =ConnectionManager.getConnection("PlayersLevels");
 			ResultSet result = con.prepareStatement("SELECT * FROM "+TableName + " WHERE uuid = '" + playeruuid.toString()+"'").executeQuery();
-			MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
+			MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
 			
 			if(result.next())
 			{

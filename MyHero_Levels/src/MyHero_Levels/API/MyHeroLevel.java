@@ -1,13 +1,14 @@
 package MyHero_Levels.API;
 
-import MyHero_Core.Managers.LangManager;
-import MyHero_Levels.Core.MyHeroLevelsMain;
+import MyHero_Core.Core.MyHeroMain;
+import MyHero_Levels.Core.MyHeroMain_Levels;
 import MyHero_Levels.Events.MyHeroExpSource;
 import MyHero_Levels.Events.MyHeroPlayerExpGetEvent;
 import MyHero_Levels.Events.MyHeroPlayerLevelUpEvent;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.network.protocol.UpdateAttributesPacket;
+import cn.nukkit.scheduler.Task;
 
 public class MyHeroLevel {
 
@@ -25,44 +26,40 @@ public class MyHeroLevel {
 	 */
 	public void adaptLevel()
 	{
-		MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
+		MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
 		for(int i = 1; i <= api.getMaxLevel(); i++) if(PlayerEXP < api.getExpFromLevel(i)) {Level = i;break;}
 	}
+	
 	/**
 	 *  Convert player exp to correct level
 	 */
 	public void adaptExp()
 	{
-		PlayerEXP = MyHeroLevelsMain.getAPI().getExpFromLevel(Level);
+		PlayerEXP = MyHeroMain_Levels.getAPI().getExpFromLevel(Level);
 	}
+	
 	
 	/**
 	 *  Check if player should have level up
 	 */
 	public boolean checkLevel()
 	{
-		MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
-		return (Level < api.getMaxLevel()) && (PlayerEXP >= api.getExpFromLevel(Level));
+		MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
+		return (Level <= api.getMaxLevel()) && (PlayerEXP >= api.getExpFromLevel(Level-1));
 	}
 	
 	
-	public void playerLevelUp()
+	public void playerLevelUp(int OldLeve, int NewLevel)
 	{
-		MyHeroPlayerLevelUpEvent plue = new MyHeroPlayerLevelUpEvent(this,Level,Level+1);
-		MyHeroLevelsMain.getMainClass().getServer().getPluginManager().callEvent(plue);
-		
+		MyHeroPlayerLevelUpEvent plue = new MyHeroPlayerLevelUpEvent(this,OldLeve,NewLevel);
+		MyHeroMain_Levels.getMainClass().getServer().getPluginManager().callEvent(plue);
 		if(!plue.isCancelled())
-			Level += 1;
+			Level = NewLevel;
 	}
 	
 	public void updatePlayerView()
 	{
-		MyHeroLevelsAPI api = MyHeroLevelsMain.getAPI();
-		/*
-		LangManager.Log("Level: " +Level);
-		LangManager.Log("Exp: " +PlayerEXP);
-		LangManager.Log("%%" + ( (float) ( ( ( PlayerEXP - api.getExpFromLevel(Level-1) ) * 100 ) / ( api.getExpFromLevel(Level) - api.getExpFromLevel(Level-1))) /100 ) );*/
-		player.sendMessage("Test");
+		MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
 		UpdateAttributesPacket pk = new UpdateAttributesPacket();
 		pk.entityId = player.getId();
 		pk.entries = new Attribute[]{
@@ -73,20 +70,25 @@ public class MyHeroLevel {
 						
 						)
 		};
-		player.sendExperienceLevel(Level);
-		player.setExperience( (int) (( ( PlayerEXP - api.getExpFromLevel(Level-1) ) * 100 ) / ( api.getExpFromLevel(Level) - api.getExpFromLevel(Level-1))));
 		
-		player.dataPacket(pk);
+		MyHeroMain.getMain().getServer().getScheduler().scheduleDelayedTask(new Task(){
+			@Override
+			public void onRun(int arg0) {
+				player.setExperience(0, Level);
+				player.dataPacket(pk);
+				
+			}
+		
+		}, 1);
+		
 	}
 	
 	
 	public void addExp(long Amount, MyHeroExpSource source)
 	{
+		MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
 		MyHeroPlayerExpGetEvent expg = new MyHeroPlayerExpGetEvent(Amount,this, source);
-		MyHeroLevelsMain.getMainClass().getServer().getPluginManager().callEvent(expg);
-		LangManager.Log("Add Player exp: " + Amount);
-		LangManager.Log("Player exp: " + PlayerEXP);
-		LangManager.Log("Player lvl: " + Level);
+		MyHeroMain_Levels.getMainClass().getServer().getPluginManager().callEvent(expg);
 		if(!expg.isCancelled())
 		{
 			if(PlayerEXP + expg.getExp() < Long.MAX_VALUE)
@@ -94,11 +96,10 @@ public class MyHeroLevel {
 			else
 				PlayerEXP = Long.MAX_VALUE;
 			
-			if(checkLevel()) adaptLevel();
+
+			if(checkLevel()) playerLevelUp(Level, api.getLevelFromExp(PlayerEXP));
+			
 			updatePlayerView();
-			LangManager.Log("Add Player exp: " + Amount);
-			LangManager.Log("Player exp: " + PlayerEXP);
-			LangManager.Log("Player lvl: " + Level);
 		}
 		
 	}
@@ -113,7 +114,7 @@ public class MyHeroLevel {
 	public void subtractExp(long Amount, MyHeroExpSource source)
 	{
 		MyHeroPlayerExpGetEvent expg = new MyHeroPlayerExpGetEvent(Amount*-1,this, source);
-		MyHeroLevelsMain.getMainClass().getServer().getPluginManager().callEvent(expg);
+		MyHeroMain_Levels.getMainClass().getServer().getPluginManager().callEvent(expg);
 		if(!expg.isCancelled())
 		{
 			if(PlayerEXP - Amount >= 0)
@@ -122,42 +123,59 @@ public class MyHeroLevel {
 				clearPlayerExp();
 			adaptLevel();
 		}
+		updatePlayerView();
+	}
+	
+	
+	public float getExpForNextLevel()
+	{
+		return MyHeroMain_Levels.getAPI().getExpFromLevel(Level) - PlayerEXP;
+	}
+	
+	public float getExpToLevel(int level)
+	{
+		return MyHeroMain_Levels.getAPI().getExpFromLevel(level) - PlayerEXP;
 	}
 	
 	public void addLevel(int i)
 	{
 		MyHeroPlayerLevelUpEvent plue = new MyHeroPlayerLevelUpEvent(this,Level,Level+i);
-		MyHeroLevelsMain.getMainClass().getServer().getPluginManager().callEvent(plue);
+		MyHeroMain_Levels.getMainClass().getServer().getPluginManager().callEvent(plue);
 		
 		if(!plue.isCancelled())
 		{
 			Level += i;
 			adaptExp();
 		}
+		updatePlayerView();
 	}
 	
 	public void subtractLevel(int i)
 	{
 		MyHeroPlayerLevelUpEvent plue = new MyHeroPlayerLevelUpEvent(this,Level,Level-i);
-		MyHeroLevelsMain.getMainClass().getServer().getPluginManager().callEvent(plue);
+		MyHeroMain_Levels.getMainClass().getServer().getPluginManager().callEvent(plue);
 		
 		if(!plue.isCancelled())
 		{
 			Level -= i;
 			adaptExp();
 		}
+		updatePlayerView();
 	}
 	
 	
 	public void clearPlayerExp()
 	{
 		PlayerEXP = 0;
+		adaptLevel();
+		updatePlayerView();
 	}
 	
 	public void setPlayerLevel(int lvl)
 	{
 		Level = lvl;
 		adaptExp();
+		updatePlayerView();
 	}
 	public int getPlayerLevel()
 	{
@@ -167,6 +185,7 @@ public class MyHeroLevel {
 	{
 		PlayerEXP = exp;
 		adaptLevel();
+		updatePlayerView();
 	}
 	
 	public long getPlayerExp()

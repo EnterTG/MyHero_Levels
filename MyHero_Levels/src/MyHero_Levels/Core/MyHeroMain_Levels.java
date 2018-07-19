@@ -10,10 +10,10 @@ import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
 
-public class MyHeroLevelsMain extends PluginBase implements Listener{
+public class MyHeroMain_Levels extends PluginBase implements Listener{
 
 	private static MyHeroLevelsAPI API;
-	private static MyHeroLevelsMain MainClass;
+	private static MyHeroMain_Levels MainClass;
 	
 	@Override
 	public void onEnable()
@@ -29,7 +29,7 @@ public class MyHeroLevelsMain extends PluginBase implements Listener{
 		return API;
 	}
 	
-	public static MyHeroLevelsMain getMainClass()
+	public static MyHeroMain_Levels getMainClass()
 	{
 		return MainClass;
 	}

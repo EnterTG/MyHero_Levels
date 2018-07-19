@@ -5,10 +5,8 @@ import java.util.UUID;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
-import MyHero_Core.Managers.LangManager;
-import MyHero_Levels.Core.MyHeroLevelsMain;
+import MyHero_Levels.Core.MyHeroMain_Levels;
 import cn.nukkit.Player;
 
 public class MyHeroLevelsAPI {
@@ -36,7 +34,7 @@ public class MyHeroLevelsAPI {
 	 */
 	public MyHeroLevel getMyHeroLevel(String playername)
 	{
-		Player p = MyHeroLevelsMain.getMainClass().getServer().getPlayer(playername);
+		Player p = MyHeroMain_Levels.getMainClass().getServer().getPlayer(playername);
 		return getMyHeroLevel(p);
 
 	}
@@ -96,8 +94,8 @@ public class MyHeroLevelsAPI {
 	private void generateEquation()
 	{
 		long[] exptable = new long[MaxLevel];
-		ScriptEngineManager mgr = new ScriptEngineManager();
-		ScriptEngine engine = mgr.getEngineByName("JavaScript");
+		/*ScriptEngineManager mgr = new ScriptEngineManager();
+		ScriptEngine engine = mgr.getEngineByName("JavaScript");*/
 		
 		try 
 		{
