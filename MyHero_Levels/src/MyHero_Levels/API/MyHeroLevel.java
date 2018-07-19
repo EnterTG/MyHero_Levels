@@ -10,6 +10,14 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import cn.nukkit.scheduler.Task;
 
+/**
+ * @author WindSkull
+ *
+ */
+/**
+ * @author WindSkull
+ *
+ */
 public class MyHeroLevel {
 
 	private Player player;
@@ -56,7 +64,10 @@ public class MyHeroLevel {
 		if(!plue.isCancelled())
 			Level = NewLevel;
 	}
-	
+
+	/**
+	 *  Update player level and exp on client side
+	 */
 	public void updatePlayerView()
 	{
 		MyHeroLevelsAPI api = MyHeroMain_Levels.getAPI();
@@ -126,12 +137,19 @@ public class MyHeroLevel {
 		updatePlayerView();
 	}
 	
-	
+	/**
+	 *
+	 * @return return amount of exp required to next level
+	 */
 	public float getExpForNextLevel()
 	{
 		return MyHeroMain_Levels.getAPI().getExpFromLevel(Level) - PlayerEXP;
 	}
-	
+
+	/**
+	 * @param level
+	 * @return return amount of exp required to get given level from actual
+	 */
 	public float getExpToLevel(int level)
 	{
 		return MyHeroMain_Levels.getAPI().getExpFromLevel(level) - PlayerEXP;

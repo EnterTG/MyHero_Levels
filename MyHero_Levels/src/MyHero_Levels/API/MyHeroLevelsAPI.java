@@ -3,9 +3,6 @@ package MyHero_Levels.API;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
 import MyHero_Levels.Core.MyHeroMain_Levels;
 import cn.nukkit.Player;
 
