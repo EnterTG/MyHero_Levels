@@ -1,7 +1,7 @@
 #name, main, version and api are required
 name: MyHeroLevels
-main: MyHero_Levels.Core.MyHeroLevelsMain
-version: "1.0"
+main: MyHero_Levels.Core.MyHeroMain_Levels
+version: "1.01"
 api: ["1.0.5"]
 author: WindSkill
 description: Plugin MyHero Levels for Nukkit
